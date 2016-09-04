@@ -1,0 +1,13 @@
+{% for torrent in torrents %}
+    <tr class="{{ loop.cycle('odd', 'even') }}">
+        <td style="max-width:50%"><a href="{{torrent.magnet}}">{{torrent.html_friendly_title|safe|truncate(100, False,'...')}}</a></td>
+        <td>{{torrent.tracker}}</td>
+        <td>{{torrent.human_size}}</td>
+        <td>{{torrent.human_age}}</td>
+        <td>{{torrent.seeders}} seeders</td>
+    </tr>
+{% endfor %}
+
+{% if finished %}
+    <tr><td><input type="hidden" id="done" value="1" /></td></tr>
+{% endif %}

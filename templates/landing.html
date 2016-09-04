@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Blanket - A Simple Duvet Web Interface</title>
+
+    <style>
+        body {
+            font-family: sans-serif;
+            word-wrap: break-word;
+        }
+
+        h1{
+            margin:0;
+            color: #007091;
+        }
+
+        h3{
+            color: #4f5352;
+            margin:0;
+
+        }
+        a {
+            color: #007091;
+        }
+
+        th{
+            font-weight:normal;
+            padding-right:10px;
+            text-align:left;
+        }
+
+        table.results {
+            width: 100%;
+            border-collapse: collapse;
+            font-size:0.9em;
+        }
+
+        table.results td {
+            padding: 4px 10px 4px 4px;
+        }
+
+        .odd td {
+            background-color: #f7f7f7;
+        }
+
+        #spinner{
+            display:none;
+            vertical-align: middle;
+        }
+
+        #footer{
+            font-size:80%;
+            margin-top:50px;
+        }
+
+        .button_row{
+            height:45px;
+            vertical-align: middle;
+        }
+    </style>
+
+    <script src="/static/jquery-min.js" ></script>
+</head>
+<body>
+    <h1>Blanket</h1>
+    <form id="search_form">
+        <table>
+            <tr><th><strong>Search</strong></th><td><input type="text" id="search" style="width:250px;" value="{{request.args.search}}"></td></tr>
+            <tr><th>Season</th><td><input type="text" id="season" value="{{request.args.season}}"></td></tr>
+            <tr><th>Episode</th><td><input type="text" id="episode" value="{{request.args.episode}}"></td></tr>
+            <tr><th>Min Seeders</th><td><input type="text" id="min_seeders" value="20"></td></tr>
+            <tr><th class="button_row"><button onclick="do_search()">Search</button></th><td><img src="/static/spinner.gif" id="spinner" /></td></tr>
+        </table>
+    </form>
+    <br />
+
+    <table id="torrents" class="results"></table>
+
+
+
+    <script>
+        function do_search(){
+            $('#spinner').show();
+            var search_string = encodeURIComponent($("#search").val());
+            var season_string = encodeURIComponent($('#season').val());
+            var episode_string = encodeURIComponent($('#episode').val());
+            var min_seeders = encodeURIComponent($('#min_seeders').val());
+
+            console.log(search_string);
+
+            var search_url = "/search?search="+ search_string +"&season=" + season_string +
+                    "&episode=" + episode_string + "&min_seeders=" + min_seeders;
+
+            $.get(search_url, function(data) {
+                console.log('Search triggered...')
+            });
+
+            $('#torrents').empty();
+
+            var loop = window.setInterval(function(){
+                 $( "#torrents" ).load("/results", function( response, status, xhr ) {
+                      if ( status == "error" ) {
+                        console.log('Error: ' + xhr.statusText);
+                      }
+                });
+
+                if($("#done").val() == "1"){
+                    console.log('Search Complete');
+                    $('#spinner').hide();
+                    clearInterval(loop);
+                }
+            }, 500);
+
+        }
+
+        $("#search_form").submit(function(e){
+            e.preventDefault();
+        });
+
+    </script>
+
+    <p id="footer">Powered by <a href="https://github.com/stopstop/duvet">Duvet</a></p>
+
+</body>
+</html>
