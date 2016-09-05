@@ -1,8 +1,6 @@
 from flask import Flask
 from flask import render_template
 from flask import request
-from flask import session
-from uuid import uuid4
 import duvet
 
 app = Flask(__name__)
